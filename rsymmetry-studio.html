@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R Symmetry Studio — Luxury Interior Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── TOKENS ─────────────────────────────────────────────────────── */
+  :root {
+    --cream:      #F8F5F0;
+    --warm-white: #FEF9FB;
+    --blush:      #E7D1CB;
+    --blush-mid:  #D4B5AE;
+    --dusty-rose: #C59C96;
+    --taupe:      #877871;
+    --charcoal:   #2E2926;
+    --gold:       #C0A57A;
+    --soft-grey:  #E0DDD9;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Montserrat', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--dusty-rose);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--dusty-rose);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  }
+  a:hover ~ .cursor, button:hover ~ .cursor { width: 18px; height: 18px; }
+
+  /* Page system */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── NAV ─────────────────────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--soft-grey);
+    height: 80px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 64px;
+  }
+
+  .nav-logo { display: flex; flex-direction: column; gap: 1px; text-decoration: none; }
+  .nav-logo-main {
+    font-family: var(--font-display);
+    font-weight: 600; font-size: 20px;
+    letter-spacing: 0.12em;
+    color: var(--charcoal);
+  }
+  .nav-logo-sub {
+    font-size: 8px; letter-spacing: 0.35em;
+    color: var(--taupe); text-transform: uppercase;
+  }
+
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-size: 11px; letter-spacing: 0.18em;
+    color: var(--charcoal); text-decoration: none;
+    text-transform: uppercase; font-weight: 400;
+    position: relative; padding-bottom: 2px;
+    transition: color 0.3s;
+    cursor: none;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover::after, .nav-links a.active-link::after { width: 100%; }
+  .nav-links a:hover, .nav-links a.active-link { color: var(--dusty-rose); }
+
+  /* ── UTILITIES ───────────────────────────────────────────────────── */
+  .label {
+    font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--dusty-rose);
+    display: block;
+  }
+  .gold-rule {
+    display: block; width: 48px; height: 1px;
+    background: var(--gold); margin-bottom: 12px;
+  }
+  .btn-dark {
+    display: inline-block;
+    background: var(--charcoal); color: var(--warm-white);
+    font-family: var(--font-body); font-size: 10px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    padding: 18px 40px; text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+    cursor: none;
+  }
+  .btn-dark:hover { background: var(--dusty-rose); }
+  .btn-outline {
+    display: inline-block;
+    border: 1px solid var(--charcoal); color: var(--charcoal);
+    font-family: var(--font-body); font-size: 10px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    padding: 18px 40px; text-decoration: none;
+    transition: all 0.3s; cursor: none;
+  }
+  .btn-outline:hover { background: var(--charcoal); color: var(--warm-white); }
+
+  /* Fade-in animation */
+  .fade-up {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .delay-1 { transition-delay: 0.1s; }
+  .delay-2 { transition-delay: 0.2s; }
+  .delay-3 { transition-delay: 0.3s; }
+  .delay-4 { transition-delay: 0.4s; }
+  .delay-5 { transition-delay: 0.5s; }
+
+  /* ── HOME PAGE ───────────────────────────────────────────────────── */
+  .hero {
+    background: var(--blush);
+    min-height: 680px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; right: -60px; top: -80px;
+    width: 640px; height: 640px;
+    border-radius: 50%;
+    background: rgba(233, 210, 202, 0.45);
+    pointer-events: none;
+  }
+
+  .hero-left {
+    padding: 80px 64px 80px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 300; font-size: clamp(60px, 6vw, 86px);
+    line-height: 1.02; color: var(--charcoal);
+    margin: 16px 0 28px;
+  }
+  .hero-title em {
+    font-style: italic; color: var(--dusty-rose);
+  }
+  .hero-sub {
+    font-size: 14px; line-height: 1.8;
+    color: var(--taupe); max-width: 420px;
+    margin-bottom: 48px;
+  }
+  .hero-ctas { display: flex; align-items: center; gap: 32px; }
+  .hero-scroll {
+    font-size: 10px; letter-spacing: 0.2em;
+    color: var(--taupe); text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hero-scroll::before {
+    content: ''; display: block;
+    width: 24px; height: 1px; background: var(--taupe);
+  }
+
+  .hero-right {
+    position: relative; overflow: hidden;
+  }
+  .hero-img-placeholder {
+    position: absolute; inset: 40px 40px 40px 0;
+    background: linear-gradient(135deg, #D9BDB8 0%, #C4A59E 40%, #B89490 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  .hero-img-placeholder::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent, transparent 20px,
+      rgba(255,255,255,0.04) 20px, rgba(255,255,255,0.04) 21px
+    );
+  }
+  .img-label {
+    font-size: 10px; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.6); text-transform: uppercase;
+    z-index: 1;
+  }
+  .img-icon {
+    font-size: 32px; opacity: 0.4; z-index: 1;
+  }
+
+  /* Marquee */
+  .marquee-strip {
+    background: var(--charcoal); overflow: hidden;
+    padding: 20px 0; white-space: nowrap;
+  }
+  .marquee-track {
+    display: inline-block;
+    animation: marquee 28s linear infinite;
+    font-size: 12px; letter-spacing: 0.28em;
+    color: var(--gold); text-transform: uppercase;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* Services */
+  .services {
+    padding: 100px 64px;
+    background: var(--cream);
+  }
+  .section-header {
+    text-align: center; margin-bottom: 64px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 300; font-size: clamp(40px, 4vw, 56px);
+    line-height: 1.1; color: var(--charcoal);
+    margin-top: 12px;
+  }
+
+  .services-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .service-card {
+    background: var(--warm-white);
+    padding: 36px 28px 32px;
+    position: relative;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px rgba(46,41,38,0.08);
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 0; height: 2px; background: var(--gold);
+    transition: width 0.5s ease;
+  }
+  .service-card:hover::before { width: 100%; }
+  .svc-num {
+    font-family: var(--font-display);
+    font-size: 13px; color: rgba(135,120,113,0.4);
+    margin-bottom: 28px; display: block;
+    letter-spacing: 0.1em;
+  }
+  .svc-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 400;
+    line-height: 1.25; color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+  .svc-desc {
+    font-size: 12px; line-height: 1.75;
+    color: var(--taupe);
+  }
+
+  /* Featured Projects */
+  .projects {
+    padding: 100px 64px;
+    background: var(--warm-white);
+  }
+  .projects-header {
+    display: flex; align-items: flex-end;
+    justify-content: space-between; margin-bottom: 48px;
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.55fr 0.4fr;
+    grid-template-rows: 320px 220px;
+    gap: 16px;
+  }
+  .proj-card {
+    position: relative; overflow: hidden;
+    cursor: none;
+  }
+  .proj-card:hover .proj-overlay { opacity: 1; }
+  .proj-card:hover .proj-img-bg { transform: scale(1.04); }
+  .proj-img-bg {
+    position: absolute; inset: 0;
+    transition: transform 0.7s ease;
+  }
+  .proj-card:nth-child(1) .proj-img-bg { background: linear-gradient(135deg, #C7A49E 0%, #B08E89 100%); }
+  .proj-card:nth-child(2) .proj-img-bg { background: linear-gradient(135deg, #D4B8B4 0%, #BFA09C 100%); }
+  .proj-card:nth-child(3) .proj-img-bg { background: linear-gradient(135deg, #C9B0AB 0%, #B89B97 100%); grid-row: 1 / 3; }
+  .proj-card:nth-child(4) .proj-img-bg { background: linear-gradient(135deg, #CCB5B0 0%, #B99F9B 100%); }
+  .proj-card:nth-child(5) .proj-img-bg { background: linear-gradient(135deg, #C3AAA5 0%, #B09590 100%); }
+
+  .proj-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(46,41,38,0.82) 0%, transparent 60%);
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 24px;
+  }
+  .proj-cat {
+    font-size: 9px; letter-spacing: 0.28em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .proj-name {
+    font-family: var(--font-display);
+    font-size: 20px; color: var(--warm-white);
+    font-weight: 300;
+  }
+  .proj-card:nth-child(3) { grid-row: 1 / 3; }
+
+  /* Testimonial */
+  .testimonial {
+    background: var(--charcoal);
+    padding: 100px 64px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .testimonial::before {
+    content: '"';
+    font-family: var(--font-display);
+    font-size: 400px; line-height: 1;
+    color: rgba(192,165,122,0.06);
+    position: absolute; top: -80px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .testi-quote {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 2.5vw, 32px);
+    font-weight: 300; line-height: 1.5;
+    color: var(--warm-white); max-width: 780px;
+    margin: 0 auto 32px; position: relative; z-index: 1;
+  }
+  .testi-author {
+    font-size: 11px; letter-spacing: 0.22em;
+    color: var(--gold); text-transform: uppercase;
+  }
+
+  /* CTA Banner */
+  .cta-banner {
+    background: var(--blush); padding: 100px 64px;
+    text-align: center;
+  }
+  .cta-banner-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 4.5vw, 60px);
+    font-weight: 300; line-height: 1.15;
+    color: var(--charcoal); margin-bottom: 40px;
+  }
+  .cta-banner-btns { display: flex; gap: 20px; justify-content: center; }
+
+  /* Footer */
+  footer {
+    background: var(--charcoal);
+    padding: 72px 64px 40px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 60px;
+  }
+  .footer-brand {}
+  .footer-logo-main {
+    font-family: var(--font-display);
+    font-weight: 600; font-size: 22px;
+    letter-spacing: 0.12em; color: var(--warm-white);
+  }
+  .footer-logo-sub {
+    font-size: 8px; letter-spacing: 0.35em;
+    color: var(--gold); text-transform: uppercase;
+    display: block; margin-top: 2px; margin-bottom: 20px;
+  }
+  .footer-desc {
+    font-size: 12px; line-height: 1.8;
+    color: rgba(254,249,251,0.45);
+  }
+  .footer-col-title {
+    font-size: 10px; letter-spacing: 0.28em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 20px; display: block;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a {
+    font-size: 12px; color: rgba(254,249,251,0.5);
+    text-decoration: none; transition: color 0.3s; cursor: none;
+  }
+  .footer-links a:hover { color: var(--dusty-rose); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding-top: 28px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy {
+    font-size: 11px; color: rgba(254,249,251,0.3);
+    letter-spacing: 0.05em;
+  }
+  .footer-socials { display: flex; gap: 20px; }
+  .footer-socials a {
+    font-size: 10px; letter-spacing: 0.2em;
+    color: rgba(254,249,251,0.35); text-decoration: none;
+    text-transform: uppercase; transition: color 0.3s; cursor: none;
+  }
+  .footer-socials a:hover { color: var(--gold); }
+
+  /* ── PORTFOLIO PAGE ──────────────────────────────────────────────── */
+  .page-hero {
+    background: linear-gradient(135deg, #EDE3DC 0%, #E2D5CC 100%);
+    padding: 80px 64px 72px;
+    position: relative; overflow: hidden;
+  }
+  .page-hero::after {
+    content: '';
+    position: absolute; right: 80px; top: 50%;
+    transform: translateY(-50%);
+    width: 480px; height: 480px; border-radius: 50%;
+    border: 1px solid rgba(192,165,122,0.2);
+    pointer-events: none;
+  }
+  .page-hero-title {
+    font-family: var(--font-display);
+    font-weight: 300; font-size: clamp(64px, 7vw, 96px);
+    line-height: 0.95; color: var(--charcoal);
+    margin: 16px 0 28px;
+  }
+  .page-hero-desc {
+    font-size: 14px; line-height: 1.8;
+    color: var(--taupe); max-width: 540px;
+  }
+
+  /* Filter tabs */
+  .filter-bar {
+    background: var(--warm-white);
+    padding: 0 64px;
+    border-bottom: 1px solid var(--soft-grey);
+    display: flex; gap: 4px; align-items: center;
+  }
+  .filter-btn {
+    padding: 18px 24px;
+    font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; border: none;
+    background: transparent; color: var(--taupe);
+    cursor: none; position: relative;
+    transition: color 0.3s;
+  }
+  .filter-btn::after {
+    content: ''; position: absolute; bottom: 0; left: 24px; right: 24px;
+    height: 2px; background: var(--gold);
+    transform: scaleX(0); transition: transform 0.3s ease;
+  }
+  .filter-btn.active, .filter-btn:hover { color: var(--charcoal); }
+  .filter-btn.active::after, .filter-btn:hover::after { transform: scaleX(1); }
+
+  /* Portfolio masonry */
+  .portfolio-grid {
+    padding: 60px 64px 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .port-card {
+    position: relative; overflow: hidden; cursor: none;
+    background: var(--blush-mid);
+  }
+  .port-card:nth-child(1) { grid-column: 1/3; height: 480px; }
+  .port-card:nth-child(2) { height: 480px; }
+  .port-card:nth-child(3) { height: 360px; }
+  .port-card:nth-child(4) { height: 360px; }
+  .port-card:nth-child(5) { height: 360px; }
+  .port-card:nth-child(6) { grid-column: 1/2; height: 340px; }
+  .port-card:nth-child(7) { height: 340px; }
+  .port-card:nth-child(8) { height: 340px; }
+  .port-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+  }
+  .port-card:hover .port-img { transform: scale(1.05); }
+  .port-bg {
+    position: absolute; inset: 0;
+    transition: transform 0.7s ease;
+  }
+  .port-card:hover .port-bg { transform: scale(1.05); }
+
+  .port-card:nth-child(1) .port-bg { background: linear-gradient(135deg,#C7A49E,#AD8D88); }
+  .port-card:nth-child(2) .port-bg { background: linear-gradient(135deg,#D4B8B4,#BFA09C); }
+  .port-card:nth-child(3) .port-bg { background: linear-gradient(135deg,#CEAEAA,#BB9B97); }
+  .port-card:nth-child(4) .port-bg { background: linear-gradient(135deg,#C8B4AF,#B8A09B); }
+  .port-card:nth-child(5) .port-bg { background: linear-gradient(135deg,#D0B5B0,#BDA19D); }
+  .port-card:nth-child(6) .port-bg { background: linear-gradient(135deg,#C4AAA5,#B49793); }
+  .port-card:nth-child(7) .port-bg { background: linear-gradient(135deg,#CAB0AB,#B99D99); }
+  .port-card:nth-child(8) .port-bg { background: linear-gradient(135deg,#C6ADA8,#B79B97); }
+
+  .port-info {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(46,41,38,0.85) 0%, transparent 55%);
+    opacity: 0.75; display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 28px;
+    transition: opacity 0.4s;
+  }
+  .port-card:hover .port-info { opacity: 1; }
+  .port-cat {
+    font-size: 9px; letter-spacing: 0.3em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .port-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 300;
+    color: var(--warm-white); line-height: 1.2;
+  }
+  .port-arrow {
+    position: absolute; top: 24px; right: 24px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--gold); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 14px; color: var(--charcoal);
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .port-card:hover .port-arrow { opacity: 1; transform: translateY(0); }
+
+  /* Stats strip */
+  .stats-strip {
+    background: var(--charcoal);
+    padding: 64px; display: grid;
+    grid-template-columns: repeat(4,1fr); gap: 0;
+  }
+  .stat-item {
+    text-align: center; padding: 0 20px;
+    border-right: 1px solid rgba(255,255,255,0.07);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 64px; font-weight: 300;
+    color: var(--gold); line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-label {
+    font-size: 11px; letter-spacing: 0.2em;
+    color: rgba(254,249,251,0.45); text-transform: uppercase;
+  }
+
+  /* ── ABOUT PAGE ─────────────────────────────────────────────────── */
+  .about-hero {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: 600px;
+  }
+  .about-hero-img {
+    background: linear-gradient(135deg,#C4A99E 0%,#AE9590 50%,#A48985 100%);
+    min-height: 600px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .about-hero-img::after {
+    content: '';
+    position: absolute; bottom: -100px; right: -100px;
+    width: 360px; height: 360px; border-radius: 50%;
+    border: 60px solid rgba(255,255,255,0.06);
+  }
+  .about-hero-right {
+    background: #EDE3DC;
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .about-name {
+    font-family: var(--font-display);
+    font-size: clamp(52px, 5.5vw, 72px);
+    font-weight: 300; line-height: 1.0;
+    color: var(--charcoal); margin: 16px 0 8px;
+  }
+  .about-role {
+    font-family: var(--font-display);
+    font-size: 20px; font-style: italic;
+    color: var(--taupe); margin-bottom: 28px;
+  }
+  .about-divider {
+    width: 100%; height: 1px;
+    background: var(--soft-grey); margin-bottom: 28px;
+  }
+  .about-bio {
+    font-size: 14px; line-height: 1.9;
+    color: var(--taupe);
+  }
+
+  /* Philosophy */
+  .philosophy {
+    background: var(--warm-white);
+    padding: 100px 64px;
+    display: grid; grid-template-columns: 1fr 0.7fr;
+    gap: 80px; align-items: center;
+  }
+  .phil-quote {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 3.5vw, 48px);
+    font-weight: 300; line-height: 1.2;
+    color: var(--charcoal); margin-bottom: 28px;
+  }
+  .phil-quote span {
+    font-style: italic; color: var(--dusty-rose);
+  }
+  .phil-desc {
+    font-size: 14px; line-height: 1.85;
+    color: var(--taupe); margin-bottom: 36px;
+  }
+  .phil-img {
+    background: linear-gradient(135deg, #D4B8B0 0%, #C5A89E 100%);
+    height: 380px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .phil-img::before {
+    content: '';
+    position: absolute; top: -40px; left: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    border: 40px solid rgba(255,255,255,0.08);
+  }
+
+  /* Values */
+  .values {
+    padding: 100px 64px;
+    background: var(--cream);
+  }
+  .values-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 32px; margin-top: 64px;
+  }
+  .value-card {
+    padding: 0 20px 0 0;
+    border-top: 1px solid var(--soft-grey);
+    padding-top: 28px;
+  }
+  .value-icon {
+    font-size: 24px; color: var(--gold);
+    margin-bottom: 16px; display: block;
+  }
+  .value-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 400;
+    color: var(--charcoal); margin-bottom: 12px;
+  }
+  .value-desc {
+    font-size: 12px; line-height: 1.75;
+    color: var(--taupe);
+  }
+
+  /* Process */
+  .process {
+    background: var(--charcoal);
+    padding: 100px 64px;
+  }
+  .process-header { margin-bottom: 64px; }
+  .process-header .label { color: var(--gold); }
+  .process-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 4.5vw, 56px);
+    font-weight: 300; line-height: 1.1;
+    color: var(--warm-white); margin-top: 12px;
+  }
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 32px;
+  }
+  .step {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 28px;
+  }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 36px; font-weight: 300;
+    color: rgba(135,120,113,0.35); margin-bottom: 16px;
+  }
+  .step-rule {
+    width: 32px; height: 1px;
+    background: var(--gold); margin-bottom: 16px;
+  }
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 400;
+    color: var(--warm-white); margin-bottom: 12px;
+  }
+  .step-desc {
+    font-size: 12px; line-height: 1.75;
+    color: rgba(254,249,251,0.5);
+  }
+
+  /* Press */
+  .press {
+    background: var(--blush);
+    padding: 72px 64px; text-align: center;
+  }
+  .press-logos {
+    display: flex; justify-content: center;
+    align-items: center; gap: 60px; margin-top: 36px;
+    flex-wrap: wrap;
+  }
+  .press-name {
+    font-family: var(--font-display);
+    font-size: 18px; font-style: italic;
+    color: var(--taupe); opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+  .press-name:hover { opacity: 1; }
+
+  /* ── CONTACT PAGE ─────────────────────────────────────────────────── */
+  .contact-layout {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 80px);
+  }
+  .contact-left {
+    background: var(--charcoal);
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 5vw, 72px);
+    font-weight: 300; line-height: 1.05;
+    color: var(--warm-white); margin: 16px 0 28px;
+  }
+  .contact-title em { font-style: italic; color: var(--dusty-rose); }
+  .contact-desc {
+    font-size: 14px; line-height: 1.85;
+    color: rgba(254,249,251,0.55);
+    max-width: 400px; margin-bottom: 56px;
+  }
+  .contact-info { display: flex; flex-direction: column; gap: 32px; }
+  .info-item {}
+  .info-label {
+    font-size: 9px; letter-spacing: 0.3em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 6px; display: block;
+  }
+  .info-value {
+    font-family: var(--font-display);
+    font-size: 18px; color: var(--warm-white);
+    font-weight: 300;
+  }
+  .contact-decoration {
+    width: 200px; height: 200px; border-radius: 50%;
+    border: 1px solid rgba(192,165,122,0.15);
+    position: relative; margin-top: 40px; align-self: flex-end;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .contact-decoration::before {
+    content: ''; position: absolute;
+    width: 130px; height: 130px; border-radius: 50%;
+    border: 1px solid rgba(192,165,122,0.1);
+  }
+  .contact-decoration span {
+    font-family: var(--font-display);
+    font-size: 11px; color: var(--gold);
+    letter-spacing: 0.15em; text-align: center;
+    line-height: 1.6;
+  }
+
+  .contact-right {
+    background: var(--cream);
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .form-title {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 300;
+    color: var(--charcoal); margin-bottom: 8px;
+  }
+  .form-sub {
+    font-size: 12px; color: var(--taupe);
+    margin-bottom: 48px;
+  }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px; margin-bottom: 20px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label {
+    font-size: 9px; letter-spacing: 0.25em;
+    color: var(--taupe); text-transform: uppercase;
+  }
+  .form-input, .form-select, .form-textarea {
+    background: transparent;
+    border: none; border-bottom: 1px solid var(--soft-grey);
+    padding: 12px 0; font-family: var(--font-body);
+    font-size: 14px; color: var(--charcoal);
+    transition: border-color 0.3s; outline: none;
+    width: 100%;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-bottom-color: var(--gold);
+  }
+  .form-textarea { resize: none; height: 90px; }
+  .form-select { cursor: none; -webkit-appearance: none; }
+
+  .form-check { display: flex; align-items: flex-start; gap: 12px; margin: 24px 0 36px; }
+  .form-check input { margin-top: 2px; accent-color: var(--dusty-rose); }
+  .form-check label { font-size: 12px; color: var(--taupe); line-height: 1.6; }
+
+  /* Interest tags */
+  .interest-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .itag {
+    font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 10px 18px;
+    border: 1px solid var(--soft-grey);
+    color: var(--taupe); cursor: none;
+    transition: all 0.3s;
+  }
+  .itag:hover, .itag.active {
+    border-color: var(--charcoal);
+    background: var(--charcoal); color: var(--warm-white);
+  }
+
+  /* ── HAMBURGER MENU ──────────────────────────────────────────────── */
+  .nav-hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+    z-index: 200;
+  }
+  .nav-hamburger span {
+    display: block; width: 24px; height: 1.5px;
+    background: var(--charcoal);
+    transition: transform 0.35s ease, opacity 0.35s ease;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none; position: fixed; inset: 0; z-index: 150;
+    background: var(--charcoal); flex-direction: column;
+    align-items: center; justify-content: center; gap: 36px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    font-family: var(--font-display); font-size: 36px;
+    font-weight: 300; color: var(--warm-white);
+    text-decoration: none; letter-spacing: 0.08em;
+    transition: color 0.3s;
+  }
+  .mobile-menu a:hover { color: var(--dusty-rose); }
+  .mobile-menu-footer {
+    position: absolute; bottom: 40px;
+    font-size: 10px; letter-spacing: 0.25em;
+    color: var(--gold); text-transform: uppercase;
+  }
+  .mobile-close {
+    position: absolute; top: 28px; right: 28px;
+    background: none; border: none; cursor: pointer;
+    font-size: 28px; color: var(--warm-white); line-height: 1;
+  }
+
+  /* ── TABLET (≤1024px) ─────────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    nav { padding: 0 32px; }
+    .hero-left, .about-hero-right, .contact-left, .contact-right,
+    .services, .projects, .values, .process,
+    .page-hero, .testimonial, .cta-banner, .philosophy, .press,
+    .portfolio-grid { padding-left: 40px; padding-right: 40px; }
+    .filter-bar { padding: 0 40px; }
+    footer { padding: 64px 40px 40px; }
+
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-right { display: none; }
+    .hero-left { padding: 72px 40px; }
+
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .projects-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 280px 280px 280px;
+    }
+    .proj-card:nth-child(1) { grid-column: 1 / -1; grid-row: auto; }
+    .proj-card:nth-child(3) { grid-row: auto; }
+
+    .portfolio-grid { grid-template-columns: 1fr 1fr; }
+    .port-card:nth-child(1) { grid-column: 1 / -1; }
+    .port-card:nth-child(6) { grid-column: auto; }
+
+    .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 1px; }
+    .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 40px 20px; }
+    .stat-item:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.07); }
+    .stat-item:nth-child(3), .stat-item:nth-child(4) { border-bottom: none; }
+
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+
+    .about-hero { grid-template-columns: 1fr; }
+    .about-hero-img { min-height: 320px; }
+    .about-hero-right { padding: 56px 40px; }
+
+    .philosophy { grid-template-columns: 1fr; gap: 40px; }
+    .phil-img { height: 280px; }
+
+    .values-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+
+    .contact-layout { grid-template-columns: 1fr; }
+    .contact-left { padding: 64px 40px; }
+    .contact-decoration { display: none; }
+    .contact-right { padding: 56px 40px; }
+
+    .press-logos { gap: 36px; }
+    .projects-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .cta-banner-btns { flex-wrap: wrap; }
+  }
+
+  /* ── MOBILE (≤640px) ─────────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+
+    nav {
+      padding: 0 20px; height: 64px;
+    }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .nav-logo-main { font-size: 17px; }
+
+    /* Global section padding for mobile */
+    .hero-left, .services, .projects, .testimonial, .cta-banner,
+    .page-hero, .about-hero-right, .about-hero-img, .philosophy,
+    .values, .process, .press, .portfolio-grid, .contact-left, .contact-right,
+    .filter-bar { padding-left: 20px; padding-right: 20px; }
+
+    footer { padding: 48px 20px 32px; }
+
+    /* HERO */
+    .hero { min-height: auto; }
+    .hero-left { padding: 56px 20px 52px; }
+    .hero-title { font-size: clamp(44px, 12vw, 64px); margin: 12px 0 20px; }
+    .hero-sub { font-size: 13px; margin-bottom: 36px; }
+    .hero-ctas { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .hero-scroll { display: none; }
+    .hero-right { display: none; }
+
+    /* MARQUEE */
+    .marquee-track { font-size: 10px; }
+
+    /* SERVICES */
+    .services { padding-top: 64px; padding-bottom: 64px; }
+    .services-grid { grid-template-columns: 1fr; gap: 12px; }
+    .section-header { margin-bottom: 40px; }
+    .service-card { padding: 28px 24px; }
+
+    /* PROJECTS */
+    .projects { padding-top: 64px; padding-bottom: 64px; }
+    .projects-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .projects-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+    .proj-card { height: 220px !important; grid-column: auto !important; grid-row: auto !important; }
+
+    /* TESTIMONIAL */
+    .testimonial { padding: 64px 20px; }
+    .testimonial::before { font-size: 200px; top: -40px; }
+    .testi-quote { font-size: clamp(20px, 5.5vw, 26px); }
+
+    /* CTA BANNER */
+    .cta-banner { padding: 64px 20px; }
+    .cta-banner-btns { flex-direction: column; align-items: center; gap: 12px; }
+    .btn-dark, .btn-outline { width: 100%; text-align: center; padding: 18px 24px; }
+
+    /* FOOTER */
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; margin-bottom: 40px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    .footer-socials { justify-content: center; }
+
+    /* PORTFOLIO PAGE */
+    .page-hero { padding: 52px 20px 48px; }
+    .page-hero-title { font-size: clamp(48px, 13vw, 72px); }
+    .page-hero::after { display: none; }
+    .filter-bar { padding: 0; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+    .filter-btn { padding: 16px 18px; font-size: 9px; flex-shrink: 0; }
+    .portfolio-grid {
+      grid-template-columns: 1fr;
+      padding: 32px 20px 64px; gap: 12px;
+    }
+    .port-card { height: 240px !important; grid-column: auto !important; }
+    .stats-strip { padding: 0; grid-template-columns: 1fr 1fr; }
+    .stat-item { padding: 36px 16px; }
+    .stat-num { font-size: 48px; }
+
+    /* ABOUT PAGE */
+    .about-hero { grid-template-columns: 1fr; }
+    .about-hero-img { min-height: 260px; }
+    .about-hero-right { padding: 48px 20px; }
+    .about-name { font-size: clamp(44px, 12vw, 60px); }
+    .philosophy { padding: 64px 20px; grid-template-columns: 1fr; }
+    .phil-img { height: 220px; }
+    .values { padding: 64px 20px; }
+    .values-grid { grid-template-columns: 1fr; gap: 24px; }
+    .process { padding: 64px 20px; }
+    .steps-grid { grid-template-columns: 1fr; gap: 28px; }
+    .press { padding: 56px 20px; }
+    .press-logos { flex-direction: column; align-items: center; gap: 20px; }
+
+    /* CONTACT PAGE */
+    .contact-layout { grid-template-columns: 1fr; }
+    .contact-left { padding: 52px 20px 48px; }
+    .contact-title { font-size: clamp(36px, 10vw, 52px); }
+    .contact-right { padding: 48px 20px 64px; }
+    .form-grid { grid-template-columns: 1fr; gap: 16px; }
+    .form-group.full { grid-column: auto; }
+    .interest-tags { gap: 8px; }
+    .itag { font-size: 9px; padding: 9px 14px; }
+  }
+
+  /* ── VERY SMALL (≤380px) ─────────────────────────────────────────── */
+  @media (max-width: 380px) {
+    .hero-title { font-size: 38px; }
+    .about-name { font-size: 38px; }
+    .page-hero-title { font-size: 44px; }
+    .contact-title { font-size: 34px; }
+    .stat-num { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── NAVIGATION ──────────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo" onclick="showPage('home'); return false;">
+    <span class="nav-logo-main">R SYMMETRY</span>
+    <span class="nav-logo-sub">Studio</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('portfolio'); return false;" id="nav-portfolio">Work</a></li>
+    <li><a href="#" onclick="showPage('about'); return false;" id="nav-about">Studio</a></li>
+    <li><a href="#" onclick="showPage('about'); return false;">Process</a></li>
+    <li><a href="#" onclick="showPage('home'); return false;">Journal</a></li>
+    <li><a href="#" onclick="showPage('contact'); return false;" id="nav-contact">Contact</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMenu()">✕</button>
+  <a href="#" onclick="showPage('home'); toggleMenu(); return false;">Home</a>
+  <a href="#" onclick="showPage('portfolio'); toggleMenu(); return false;">Work</a>
+  <a href="#" onclick="showPage('about'); toggleMenu(); return false;">Studio</a>
+  <a href="#" onclick="showPage('about'); toggleMenu(); return false;">Process</a>
+  <a href="#" onclick="showPage('contact'); toggleMenu(); return false;">Contact</a>
+  <span class="mobile-menu-footer">rsymmetrystudio.in</span>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  HOME PAGE                                                       -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-left">
+      <span class="gold-rule"></span>
+      <span class="label fade-up">Luxury Interior Design</span>
+      <h1 class="hero-title fade-up delay-1">
+        Spaces That<br>Tell <em>Your</em><br>Story.
+      </h1>
+      <p class="hero-sub fade-up delay-2">
+        Bespoke residential interiors crafted by Rutvi Rakholiya — where minimalism meets warmth and every detail is intentional.
+      </p>
+      <div class="hero-ctas fade-up delay-3">
+        <a href="#" class="btn-dark" onclick="showPage('portfolio'); return false;">View Our Work</a>
+        <span class="hero-scroll">Scroll to Explore</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-placeholder">
+        <div class="img-icon">⬡</div>
+        <span class="img-label">Hero Interior Photo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee-strip">
+    <span class="marquee-track">
+      THOUGHTFUL DESIGN &nbsp;·&nbsp; CURATED SPACES &nbsp;·&nbsp; TIMELESS ELEGANCE &nbsp;·&nbsp; HANDCRAFTED INTERIORS &nbsp;·&nbsp; RUTVI RAKHOLIYA &nbsp;·&nbsp; AHMEDABAD &nbsp;·&nbsp; THOUGHTFUL DESIGN &nbsp;·&nbsp; CURATED SPACES &nbsp;·&nbsp; TIMELESS ELEGANCE &nbsp;·&nbsp; HANDCRAFTED INTERIORS &nbsp;·&nbsp; RUTVI RAKHOLIYA &nbsp;·&nbsp; AHMEDABAD &nbsp;·&nbsp;
+    </span>
+  </div>
+
+  <!-- Services -->
+  <section class="services">
+    <div class="section-header fade-up">
+      <span class="label">What We Do</span>
+      <h2 class="section-title">Our Expertise</h2>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-up delay-1">
+        <span class="svc-num">01</span>
+        <div class="svc-title">Residential<br>Interiors</div>
+        <p class="svc-desc">Full home transformations that balance daily living with refined beauty.</p>
+      </div>
+      <div class="service-card fade-up delay-2">
+        <span class="svc-num">02</span>
+        <div class="svc-title">Luxury<br>Spaces</div>
+        <p class="svc-desc">Premium material curation and bespoke furniture sourcing for the discerning.</p>
+      </div>
+      <div class="service-card fade-up delay-3">
+        <span class="svc-num">03</span>
+        <div class="svc-title">Space<br>Planning</div>
+        <p class="svc-desc">Intelligent layouts that maximise flow, light and a sense of ease.</p>
+      </div>
+      <div class="service-card fade-up delay-4">
+        <span class="svc-num">04</span>
+        <div class="svc-title">Styling &amp;<br>Staging</div>
+        <p class="svc-desc">Finishing touches that breathe life and soul into every corner.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="projects">
+    <div class="projects-header">
+      <div>
+        <span class="label">Selected Work</span>
+        <h2 class="section-title" style="text-align:left; margin-top:12px;">Recent Projects</h2>
+      </div>
+      <a href="#" class="btn-outline" onclick="showPage('portfolio'); return false;">View All Projects</a>
+    </div>
+    <div class="projects-grid fade-up">
+      <div class="proj-card" style="grid-row:1/3;">
+        <div class="proj-img-bg"></div>
+        <div class="proj-overlay">
+          <span class="proj-cat">Residential · 2024</span>
+          <div class="proj-name">The Ahmedabad Residence</div>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-img-bg"></div>
+        <div class="proj-overlay">
+          <span class="proj-cat">Luxury · 2024</span>
+          <div class="proj-name">The Ivory Suite</div>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-img-bg"></div>
+        <div class="proj-overlay">
+          <span class="proj-cat">Minimal · 2024</span>
+          <div class="proj-name">The Loft Edit</div>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-img-bg"></div>
+        <div class="proj-overlay">
+          <span class="proj-cat">Residential · 2023</span>
+          <div class="proj-name">The Quiet Home</div>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-img-bg"></div>
+        <div class="proj-overlay">
+          <span class="proj-cat">Luxury · 2023</span>
+          <div class="proj-name">The Garden Villa</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial -->
+  <section class="testimonial">
+    <blockquote class="testi-quote fade-up">
+      "Working with Rutvi felt like she read our minds. Our home is now exactly what we always dreamed of — and so much more."
+    </blockquote>
+    <p class="testi-author fade-up delay-1">— Priya &amp; Karan Shah, Ahmedabad</p>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-banner">
+    <h2 class="cta-banner-title fade-up">Ready to transform<br>your space?</h2>
+    <div class="cta-banner-btns fade-up delay-1">
+      <a href="#" class="btn-dark" onclick="showPage('contact'); return false;">Get in Touch</a>
+      <a href="#" class="btn-outline" onclick="showPage('portfolio'); return false;">See Our Work</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-main">R SYMMETRY</div>
+        <span class="footer-logo-sub">Studio</span>
+        <p class="footer-desc">Luxury residential interiors designed by Rutvi Rakholiya. Based in Ahmedabad, delivering across India.</p>
+      </div>
+      <div>
+        <span class="footer-col-title">Studio</span>
+        <ul class="footer-links">
+          <li><a href="#" onclick="showPage('about'); return false;">About</a></li>
+          <li><a href="#" onclick="showPage('about'); return false;">Our Process</a></li>
+          <li><a href="#">Journal</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Services</span>
+        <ul class="footer-links">
+          <li><a href="#">Residential</a></li>
+          <li><a href="#">Luxury Spaces</a></li>
+          <li><a href="#">Space Planning</a></li>
+          <li><a href="#">Styling</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Connect</span>
+        <ul class="footer-links">
+          <li><a href="mailto:hello@rsymmetrystudio.in">hello@rsymmetrystudio.in</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 R Symmetry Studio. All rights reserved. · rsymmetrystudio.in</span>
+      <div class="footer-socials">
+        <a href="#">Instagram</a>
+        <a href="#">Pinterest</a>
+        <a href="#">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /page-home -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  PORTFOLIO PAGE                                                  -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-portfolio">
+
+  <div class="page-hero">
+    <span class="gold-rule"></span>
+    <span class="label">Our Work</span>
+    <h1 class="page-hero-title fade-up">Portfolio</h1>
+    <p class="page-hero-desc fade-up delay-1">
+      Each project is a collaboration — a conversation between our design philosophy and your life. Here are some of our favourites.
+    </p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterCards(this,'all')">All</button>
+    <button class="filter-btn" onclick="filterCards(this,'residential')">Residential</button>
+    <button class="filter-btn" onclick="filterCards(this,'luxury')">Luxury</button>
+    <button class="filter-btn" onclick="filterCards(this,'minimal')">Minimal</button>
+    <button class="filter-btn" onclick="filterCards(this,'commercial')">Commercial</button>
+  </div>
+
+  <div class="portfolio-grid">
+    <div class="port-card" data-cat="residential">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Residential · 2024</span>
+        <div class="port-title">The Ahmedabad Residence</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="luxury">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Luxury · 2024</span>
+        <div class="port-title">The Ivory Suite</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="minimal">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Minimal · 2024</span>
+        <div class="port-title">The Loft Edit</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="residential">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Residential · 2023</span>
+        <div class="port-title">The Quiet Home</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="luxury">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Luxury · 2023</span>
+        <div class="port-title">The Garden Villa</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="minimal">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Minimal · 2023</span>
+        <div class="port-title">The Studio Flat</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="residential">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Residential · 2022</span>
+        <div class="port-title">The Heritage Home</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+    <div class="port-card" data-cat="luxury">
+      <div class="port-bg"></div>
+      <div class="port-info">
+        <span class="port-cat">Luxury · 2022</span>
+        <div class="port-title">The Penthouse</div>
+      </div>
+      <div class="port-arrow">→</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="stat-item fade-up">
+      <div class="stat-num">42+</div>
+      <div class="stat-label">Projects Completed</div>
+    </div>
+    <div class="stat-item fade-up delay-1">
+      <div class="stat-num">8+</div>
+      <div class="stat-label">Years of Experience</div>
+    </div>
+    <div class="stat-item fade-up delay-2">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Client Satisfaction</div>
+    </div>
+    <div class="stat-item fade-up delay-3">
+      <div class="stat-num">12+</div>
+      <div class="stat-label">Cities Delivered</div>
+    </div>
+  </div>
+
+  <!-- Testimonial -->
+  <section class="testimonial">
+    <blockquote class="testi-quote fade-up">
+      "Rutvi didn't just design our home — she designed our daily joy."
+    </blockquote>
+    <p class="testi-author fade-up delay-1">— Meera Patel, Mumbai</p>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-main">R SYMMETRY</div>
+        <span class="footer-logo-sub">Studio</span>
+        <p class="footer-desc">Luxury residential interiors designed by Rutvi Rakholiya. Based in Ahmedabad, delivering across India.</p>
+      </div>
+      <div>
+        <span class="footer-col-title">Studio</span>
+        <ul class="footer-links">
+          <li><a href="#" onclick="showPage('about'); return false;">About</a></li>
+          <li><a href="#">Our Process</a></li>
+          <li><a href="#">Journal</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Services</span>
+        <ul class="footer-links">
+          <li><a href="#">Residential</a></li>
+          <li><a href="#">Luxury Spaces</a></li>
+          <li><a href="#">Space Planning</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Connect</span>
+        <ul class="footer-links">
+          <li><a href="mailto:hello@rsymmetrystudio.in">hello@rsymmetrystudio.in</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 R Symmetry Studio · rsymmetrystudio.in</span>
+    </div>
+  </footer>
+
+</div><!-- /page-portfolio -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  ABOUT PAGE                                                      -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+
+  <!-- About Hero -->
+  <div class="about-hero">
+    <div class="about-hero-img">
+      <div style="z-index:1; text-align:center;">
+        <div class="img-icon" style="font-size:40px; color:rgba(255,255,255,0.4);">⬡</div>
+        <span class="img-label" style="color:rgba(255,255,255,0.5); margin-top:12px; display:block;">Photo of Rutvi Rakholiya</span>
+      </div>
+    </div>
+    <div class="about-hero-right">
+      <span class="gold-rule"></span>
+      <span class="label">About the Designer</span>
+      <h1 class="about-name fade-up">Rutvi<br>Rakholiya</h1>
+      <div class="about-role fade-up delay-1">Interior Designer · Ahmedabad</div>
+      <div class="about-divider"></div>
+      <p class="about-bio fade-up delay-2">
+        With a deep love for materials, light, and the quiet power of thoughtfully arranged space, Rutvi brings a poetic sensibility to every home she touches.<br><br>
+        Her work blends minimalist restraint with warmth — creating homes that feel deeply personal, unhurried, and beautifully liveable. Every project begins with listening, and ends with a space that feels as though it could not have existed any other way.
+      </p>
+    </div>
+  </div>
+
+  <!-- Philosophy -->
+  <section class="philosophy">
+    <div>
+      <span class="gold-rule"></span>
+      <span class="label">Design Philosophy</span>
+      <h2 class="phil-quote fade-up">
+        Beauty lives in the balance between <span>restraint</span> and warmth.
+      </h2>
+      <p class="phil-desc fade-up delay-1">
+        Rutvi believes that great design is not about excess, but about editing — knowing what to remove as much as what to add. Each space she creates is a quiet statement of refined taste and deep intentionality.
+      </p>
+      <a href="#" class="btn-dark fade-up delay-2" onclick="showPage('contact'); return false;">Start a Project</a>
+    </div>
+    <div class="phil-img fade-up delay-1">
+      <div class="img-icon" style="font-size:36px; color:rgba(255,255,255,0.35); z-index:1; position:relative;">⬡</div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="values">
+    <div class="section-header fade-up">
+      <span class="label">Our Values</span>
+      <h2 class="section-title">What we stand for</h2>
+    </div>
+    <div class="values-grid">
+      <div class="value-card fade-up delay-1">
+        <span class="value-icon">◇</span>
+        <div class="value-title">Intentionality</div>
+        <p class="value-desc">Every choice — from material to light source — is deliberate and considered.</p>
+      </div>
+      <div class="value-card fade-up delay-2">
+        <span class="value-icon">◈</span>
+        <div class="value-title">Craftsmanship</div>
+        <p class="value-desc">We work with skilled artisans who share our exacting standards and passion.</p>
+      </div>
+      <div class="value-card fade-up delay-3">
+        <span class="value-icon">◉</span>
+        <div class="value-title">Personalisation</div>
+        <p class="value-desc">No two homes are the same. Neither are any two of our projects.</p>
+      </div>
+      <div class="value-card fade-up delay-4">
+        <span class="value-icon">◎</span>
+        <div class="value-title">Timelessness</div>
+        <p class="value-desc">We design for decades, not for trends that fade with the season.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process">
+    <div class="process-header">
+      <span class="gold-rule" style="background:var(--gold)"></span>
+      <span class="label" style="color:var(--gold)">The Process</span>
+      <h2 class="process-title fade-up">How we bring your<br>vision to life</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step fade-up delay-1">
+        <div class="step-num">01</div>
+        <div class="step-rule"></div>
+        <div class="step-title">Discovery</div>
+        <p class="step-desc">We listen deeply to understand your lifestyle, aspirations and how you truly want to live.</p>
+      </div>
+      <div class="step fade-up delay-2">
+        <div class="step-num">02</div>
+        <div class="step-rule"></div>
+        <div class="step-title">Concept Design</div>
+        <p class="step-desc">Mood boards, material palettes and space plans take form, guided by your vision.</p>
+      </div>
+      <div class="step fade-up delay-3">
+        <div class="step-num">03</div>
+        <div class="step-rule"></div>
+        <div class="step-title">Detailed Design</div>
+        <p class="step-desc">Every detail — furniture to lighting — is carefully designed and specified.</p>
+      </div>
+      <div class="step fade-up delay-4">
+        <div class="step-num">04</div>
+        <div class="step-rule"></div>
+        <div class="step-title">Delivery</div>
+        <p class="step-desc">We supervise execution closely to ensure the vision is realised perfectly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Press -->
+  <section class="press">
+    <span class="label">As Seen In</span>
+    <div class="press-logos">
+      <span class="press-name">Elle Décor</span>
+      <span class="press-name">Architectural Digest</span>
+      <span class="press-name">Houzz</span>
+      <span class="press-name">Design India</span>
+      <span class="press-name">The Hindu Spaces</span>
+    </div>
+  </section>
+
+  <!-- About CTA -->
+  <section class="cta-banner">
+    <h2 class="cta-banner-title fade-up">Let's create something<br>beautiful together.</h2>
+    <div class="cta-banner-btns fade-up delay-1">
+      <a href="#" class="btn-dark" onclick="showPage('contact'); return false;">Start a Project</a>
+      <a href="#" class="btn-outline" onclick="showPage('portfolio'); return false;">View Portfolio</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-main">R SYMMETRY</div>
+        <span class="footer-logo-sub">Studio</span>
+        <p class="footer-desc">Luxury residential interiors designed by Rutvi Rakholiya. Ahmedabad, India.</p>
+      </div>
+      <div>
+        <span class="footer-col-title">Studio</span>
+        <ul class="footer-links">
+          <li><a href="#" onclick="showPage('about'); return false;">About</a></li>
+          <li><a href="#">Journal</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Services</span>
+        <ul class="footer-links">
+          <li><a href="#">Residential</a></li>
+          <li><a href="#">Luxury Spaces</a></li>
+          <li><a href="#">Space Planning</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Connect</span>
+        <ul class="footer-links">
+          <li><a href="mailto:hello@rsymmetrystudio.in">hello@rsymmetrystudio.in</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 R Symmetry Studio · rsymmetrystudio.in</span>
+    </div>
+  </footer>
+
+</div><!-- /page-about -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  CONTACT PAGE                                                    -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+
+  <div class="contact-layout">
+
+    <!-- Left panel -->
+    <div class="contact-left">
+      <div>
+        <span class="gold-rule" style="background:var(--gold)"></span>
+        <span class="label" style="color:var(--gold)">Get in Touch</span>
+        <h1 class="contact-title fade-up">Let's build<br>something <em>beautiful</em><br>together.</h1>
+        <p class="contact-desc fade-up delay-1">
+          Whether you're starting from scratch or reimagining an existing space, we'd love to hear about your project. Every great home begins with a conversation.
+        </p>
+        <div class="contact-info fade-up delay-2">
+          <div class="info-item">
+            <span class="info-label">Email</span>
+            <div class="info-value">hello@rsymmetrystudio.in</div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone</span>
+            <div class="info-value">+91 98765 43210</div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Studio</span>
+            <div class="info-value">Ahmedabad, Gujarat, India</div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Instagram</span>
+            <div class="info-value">@rsymmetrystudio</div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-decoration">
+        <span>rsymmetry<br>studio.in</span>
+      </div>
+    </div>
+
+    <!-- Right panel — form -->
+    <div class="contact-right">
+      <div class="form-title">Tell us about your project</div>
+      <p class="form-sub">We typically respond within 24 hours.</p>
+
+      <div style="margin-bottom:20px;">
+        <span class="label" style="margin-bottom:12px;">I'm interested in</span>
+        <div class="interest-tags">
+          <span class="itag active" onclick="toggleTag(this)">Residential Design</span>
+          <span class="itag" onclick="toggleTag(this)">Luxury Spaces</span>
+          <span class="itag" onclick="toggleTag(this)">Space Planning</span>
+          <span class="itag" onclick="toggleTag(this)">Styling &amp; Staging</span>
+          <span class="itag" onclick="toggleTag(this)">Other</span>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" placeholder="Rutvi">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" placeholder="Rakholiya">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" placeholder="you@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" class="form-input" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" class="form-input" placeholder="Ahmedabad">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Project Budget</label>
+          <select class="form-select">
+            <option>Select a range</option>
+            <option>₹10L – ₹25L</option>
+            <option>₹25L – ₹50L</option>
+            <option>₹50L – ₹1Cr</option>
+            <option>₹1Cr+</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Tell us about your space</label>
+          <textarea class="form-textarea" placeholder="Briefly describe your project — size, style you love, timeline, and anything else that feels important…"></textarea>
+        </div>
+      </div>
+
+      <div class="form-check">
+        <input type="checkbox" id="consent" checked>
+        <label for="consent">I'm happy to be contacted about my project enquiry. I understand my information will be handled per R Symmetry's privacy policy.</label>
+      </div>
+
+      <a href="#" class="btn-dark" style="width:100%; text-align:center; display:block;">Send Enquiry</a>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-main">R SYMMETRY</div>
+        <span class="footer-logo-sub">Studio</span>
+        <p class="footer-desc">Luxury residential interiors designed by Rutvi Rakholiya. Ahmedabad, India.</p>
+      </div>
+      <div>
+        <span class="footer-col-title">Studio</span>
+        <ul class="footer-links">
+          <li><a href="#" onclick="showPage('about'); return false;">About</a></li>
+          <li><a href="#">Journal</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Services</span>
+        <ul class="footer-links">
+          <li><a href="#">Residential</a></li>
+          <li><a href="#">Luxury Spaces</a></li>
+          <li><a href="#">Space Planning</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="footer-col-title">Connect</span>
+        <ul class="footer-links">
+          <li><a href="mailto:hello@rsymmetrystudio.in">hello@rsymmetrystudio.in</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 R Symmetry Studio · rsymmetrystudio.in</span>
+    </div>
+  </footer>
+
+</div><!-- /page-contact -->
+
+
+<script>
+  // ── CURSOR ─────────────────────────────────────────────────────────
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top  = e.clientY + 'px';
+    }, 60);
+  });
+
+  // ── MOBILE MENU ────────────────────────────────────────────────────
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const btn  = document.getElementById('hamburger');
+    const isOpen = menu.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+
+  // ── PAGE NAVIGATION ────────────────────────────────────────────────
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // close mobile menu if open
+    const menu = document.getElementById('mobileMenu');
+    const btn  = document.getElementById('hamburger');
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+    document.body.style.overflow = '';
+
+    // active nav link
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active-link'));
+    const map = { portfolio:'nav-portfolio', about:'nav-about', contact:'nav-contact' };
+    if (map[id]) document.getElementById(map[id])?.classList.add('active-link');
+
+    // re-trigger animations
+    setTimeout(initFadeUps, 100);
+  }
+
+  // ── SCROLL FADE UPS ────────────────────────────────────────────────
+  function initFadeUps() {
+    const els = document.querySelectorAll('.page.active .fade-up');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    els.forEach(el => obs.observe(el));
+  }
+  initFadeUps();
+
+  // ── FILTER TABS ────────────────────────────────────────────────────
+  function filterCards(btn, cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.port-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+      } else {
+        card.style.opacity = '0.25';
+        card.style.transform = 'scale(0.97)';
+      }
+    });
+  }
+
+  // ── INTEREST TAGS ──────────────────────────────────────────────────
+  function toggleTag(el) {
+    el.classList.toggle('active');
+  }
+</script>
+
+</body>
+</html>
